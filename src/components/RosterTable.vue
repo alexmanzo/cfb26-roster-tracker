@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue';
-import type { DerivedStats } from '../types/roster';
+import type { DerivedStats, PositionGroup, PositionSuperGroup, SuperGroupDerivedStats } from '../types/roster';
 import { useRosterStore } from '../composables/useRosterStore';
 import { useKeyboardNav } from '../composables/useKeyboardNav';
 import PositionRow from './PositionRow.vue';
+import PositionSuperGroupRow from './PositionSuperGroupRow.vue';
 
 const {
   state,
   derivedMap,
+  superGroupDerivedMap,
   updateSrTr,
   updateTarget,
+  updateSuperGroupTarget,
   addPlayer,
   removePlayer,
   updatePlayerOvr,
@@ -19,6 +22,59 @@ const {
 } = useRosterStore();
 
 const positionIds = computed(() => state.value.positions.map(p => p.id));
+
+type RenderItem =
+  | { kind: 'section'; key: string; def: GroupDef }
+  | { kind: 'superGroup'; key: string; sg: PositionSuperGroup; memberLabels: string[] }
+  | { kind: 'position'; key: string; pos: PositionGroup; isSubRow: boolean };
+
+const renderItems = computed((): RenderItem[] => {
+  const items: RenderItem[] = [];
+  const rendered = new Set<string>();
+  const posOrder = new Map(state.value.positions.map((p, i) => [p.id, i]));
+
+  // Build map: firstMemberId -> superGroup
+  const sgFirstMap = new Map<string, PositionSuperGroup>();
+  for (const sg of state.value.superGroups) {
+    const firstId = [...sg.memberIds].sort(
+      (a, b) => (posOrder.get(a) ?? 999) - (posOrder.get(b) ?? 999)
+    )[0];
+    if (firstId !== undefined) sgFirstMap.set(firstId, sg);
+  }
+
+  for (const pos of state.value.positions) {
+    if (rendered.has(pos.id)) continue;
+
+    // Section divider (OFFENSE / DEFENSE / SPECIAL TEAMS)
+    const groupDef = getGroupForStart(pos.id);
+    if (groupDef) items.push({ kind: 'section', key: `section-${groupDef.label}`, def: groupDef });
+
+    const sg = sgFirstMap.get(pos.id);
+    if (sg) {
+      // Emit super group header then all members together
+      const memberLabels = sg.memberIds.map(
+        id => state.value.positions.find(p => p.id === id)?.label ?? id.toUpperCase()
+      );
+      items.push({ kind: 'superGroup', key: `sg-${sg.id}`, sg, memberLabels });
+
+      const members = [...sg.memberIds].sort(
+        (a, b) => (posOrder.get(a) ?? 999) - (posOrder.get(b) ?? 999)
+      );
+      for (const memberId of members) {
+        const memberPos = state.value.positions.find(p => p.id === memberId);
+        if (memberPos) {
+          items.push({ kind: 'position', key: `pos-${memberPos.id}`, pos: memberPos, isSubRow: true });
+          rendered.add(memberId);
+        }
+      }
+    } else {
+      items.push({ kind: 'position', key: `pos-${pos.id}`, pos, isSubRow: false });
+      rendered.add(pos.id);
+    }
+  }
+
+  return items;
+});
 
 const { focusedRowId, athPending, handleKeydown, setFocus } = useKeyboardNav(
   positionIds,
@@ -86,27 +142,39 @@ defineExpose({ state, derivedMap });
       </thead>
 
       <tbody>
-        <template v-for="pos in state.positions" :key="pos.id">
+        <template v-for="item in renderItems" :key="item.key">
 
-          <!-- Position group section divider -->
-          <tr v-if="getGroupForStart(pos.id)" :class="getGroupForStart(pos.id)!.bgClass">
+          <!-- Offense / Defense / Special Teams section divider -->
+          <tr v-if="item.kind === 'section'" :class="item.def.bgClass">
             <td colspan="8" class="px-3 py-[5px]">
               <div class="flex items-center gap-3">
-                <div class="h-px w-2 shrink-0" :class="getGroupForStart(pos.id)!.lineClass" />
+                <div class="h-px w-2 shrink-0" :class="item.def.lineClass" />
                 <span
                   class="font-barlow text-sm font-bold tracking-[0.3em] uppercase shrink-0"
-                  :class="getGroupForStart(pos.id)!.textClass"
-                >{{ getGroupForStart(pos.id)!.label }}</span>
-                <div class="h-px flex-1" :class="getGroupForStart(pos.id)!.lineClass" />
+                  :class="item.def.textClass"
+                >{{ item.def.label }}</span>
+                <div class="h-px flex-1" :class="item.def.lineClass" />
               </div>
             </td>
           </tr>
 
+          <!-- Position super-group summary row -->
+          <PositionSuperGroupRow
+            v-else-if="item.kind === 'superGroup'"
+            :sg="item.sg"
+            :derived="(superGroupDerivedMap.get(item.sg.id) as SuperGroupDerivedStats)"
+            :memberLabels="item.memberLabels"
+            @update:target="updateSuperGroupTarget"
+          />
+
+          <!-- Individual position row -->
           <PositionRow
-            :pos="pos"
-            :derived="(derivedMap.get(pos.id) as DerivedStats)"
-            :isFocused="focusedRowId === pos.id"
+            v-else
+            :pos="item.pos"
+            :derived="(derivedMap.get(item.pos.id) as DerivedStats)"
+            :isFocused="focusedRowId === item.pos.id"
             :athPending="athPending"
+            :isSubRow="item.isSubRow"
             @row-focus="setFocus"
             @update:srTr="updateSrTr"
             @update:target="updateTarget"

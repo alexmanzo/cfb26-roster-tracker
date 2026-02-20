@@ -1,6 +1,6 @@
 import { computed } from 'vue';
-import type { Commit, DerivedStats, PositionGroup, RosterState } from '../types/roster';
-import { DEFAULT_POSITIONS } from '../data/defaultPositions';
+import type { Commit, DerivedStats, PositionGroup, RosterState, SuperGroupDerivedStats } from '../types/roster';
+import { DEFAULT_POSITIONS, DEFAULT_SUPER_GROUPS } from '../data/defaultPositions';
 import { useLocalStorage } from './useLocalStorage';
 
 function deepClone<T>(val: T): T {
@@ -18,7 +18,13 @@ function createStore() {
   const state = useLocalStorage<RosterState>('cfb26-roster', {
     version: 1,
     positions: deepClone(DEFAULT_POSITIONS),
+    superGroups: deepClone(DEFAULT_SUPER_GROUPS),
   });
+
+  // Migration: add superGroups if missing from older stored data
+  if (!state.value.superGroups) {
+    state.value = { ...state.value, superGroups: deepClone(DEFAULT_SUPER_GROUPS) };
+  }
 
   const derivedMap = computed(() => {
     const map = new Map<string, DerivedStats>();
@@ -27,6 +33,21 @@ function createStore() {
       const projected = (total - pos.srTr) + pos.commits.length;
       const need = pos.target - projected;
       map.set(pos.id, { total, projected, need });
+    }
+    return map;
+  });
+
+  const superGroupDerivedMap = computed(() => {
+    const map = new Map<string, SuperGroupDerivedStats>();
+    for (const sg of state.value.superGroups) {
+      let total = 0, projected = 0, srTrSum = 0;
+      for (const memberId of sg.memberIds) {
+        const d = derivedMap.value.get(memberId);
+        if (d) { total += d.total; projected += d.projected; }
+        const pos = state.value.positions.find(p => p.id === memberId);
+        if (pos) srTrSum += pos.srTr;
+      }
+      map.set(sg.id, { total, projected, need: sg.target - projected, srTrSum });
     }
     return map;
   });
@@ -43,6 +64,11 @@ function createStore() {
   function updateTarget(posId: string, value: number) {
     const pos = getPosition(posId);
     if (pos) pos.target = Math.max(0, value);
+  }
+
+  function updateSuperGroupTarget(sgId: string, value: number) {
+    const sg = state.value.superGroups.find(s => s.id === sgId);
+    if (sg) sg.target = Math.max(0, value);
   }
 
   function addPlayer(posId: string, ovr: number) {
@@ -98,14 +124,17 @@ function createStore() {
     state.value = {
       version: 1,
       positions: deepClone(DEFAULT_POSITIONS),
+      superGroups: deepClone(DEFAULT_SUPER_GROUPS),
     };
   }
 
   return {
     state,
     derivedMap,
+    superGroupDerivedMap,
     updateSrTr,
     updateTarget,
+    updateSuperGroupTarget,
     addPlayer,
     removePlayer,
     updatePlayerOvr,

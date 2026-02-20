@@ -18,13 +18,25 @@ export interface PositionGroup {
   commits: Commit[];
 }
 
+export interface PositionSuperGroup {
+  id: string;
+  label: string;
+  memberIds: string[];
+  target: number;
+}
+
 export interface DerivedStats {
   total: number;
   projected: number;
   need: number;
 }
 
+export interface SuperGroupDerivedStats extends DerivedStats {
+  srTrSum: number;
+}
+
 export interface RosterState {
   version: number;
   positions: PositionGroup[];
+  superGroups: PositionSuperGroup[];
 }

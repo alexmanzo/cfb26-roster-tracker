@@ -10,6 +10,7 @@ const props = defineProps<{
   derived: DerivedStats;
   isFocused: boolean;
   athPending: boolean;
+  isSubRow?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -85,12 +86,12 @@ function needBg(need: number): string {
     <!-- Position label -->
     <td
       class="px-3 py-2.5 whitespace-nowrap transition-colors"
-      :class="isFocused ? 'border-l-2 border-blue-500' : 'border-l-2 border-transparent'"
+      :class="isFocused ? 'border-l-2 border-blue-500' : isSubRow ? 'border-l-2 border-zinc-700/40' : 'border-l-2 border-transparent'"
     >
       <div class="flex items-center gap-2">
         <span
           class="font-barlow font-bold text-[19px] tracking-wide leading-none"
-          :class="isFocused ? 'text-zinc-100' : 'text-zinc-300'"
+          :class="[isFocused ? 'text-zinc-100' : 'text-zinc-300', isSubRow && !isFocused ? 'ml-2' : '']"
           >{{ pos.label }}</span
         >
         <span v-if="isFocused" class="inline-block w-1 h-1 rounded-full bg-blue-400 animate-pulse" />

@@ -1,4 +1,4 @@
-import type { PositionGroup } from '../types/roster';
+import type { PositionGroup, PositionSuperGroup } from '../types/roster';
 
 let _idCounter = 0;
 function uid() { return String(++_idCounter); }
@@ -176,4 +176,11 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     target: 1,
     commits: [],
   },
+];
+
+export const DEFAULT_SUPER_GROUPS: PositionSuperGroup[] = [
+  { id: 'ot', label: 'OT', memberIds: ['lt', 'rt'], target: 8 },
+  { id: 'og', label: 'OG', memberIds: ['lg', 'rg'], target: 6 },
+  { id: 'edge', label: 'EDGE', memberIds: ['ledg', 'redg'], target: 8 },
+  { id: 'olb', label: 'OLB', memberIds: ['sam', 'will'], target: 7 },
 ];
