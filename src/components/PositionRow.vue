@@ -24,7 +24,7 @@ const emit = defineEmits<{
 }>();
 
 const showAddPlayer = ref(false);
-const newOvr = ref(80);
+const newOvr = ref('');
 
 const sortedPlayers = computed(() =>
   [...props.pos.players].sort((a, b) => b.ovr - a.ovr),
@@ -35,9 +35,10 @@ const sortedCommits = computed(() =>
 );
 
 function onAddPlayer() {
-  if (newOvr.value >= 1 && newOvr.value <= 99) {
-    emit('add-player', props.pos.id, newOvr.value);
-    newOvr.value = 80;
+  const val = parseInt(newOvr.value);
+  if (!isNaN(val) && val >= 1 && val <= 99) {
+    emit('add-player', props.pos.id, val);
+    newOvr.value = '';
     showAddPlayer.value = false;
   }
 }
@@ -147,7 +148,7 @@ function needBg(need: number): string {
           v-if="showAddPlayer"
           type="number"
           v-model="newOvr"
-          class="w-14 px-1.5 py-[6px] font-jetbrains text-base font-bold rounded border border-blue-400/70 bg-zinc-800 text-blue-300 text-center outline-none"
+          class="w-10 h-[30px] px-2.5 font-jetbrains text-base font-bold rounded border border-zinc-600 bg-zinc-800 text-zinc-300 text-center outline-none leading-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           min="1"
           max="99"
           @keydown.enter.prevent="onAddPlayer"
