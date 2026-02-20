@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scrollbar-color: #3f3f46 transparent;
+    scrollbar-width: thin;
+  }
+
+  body {
+    margin: 0;
+    background-color: #09090b;
+    color: #f4f4f5;
+    font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
+    /* Subtle dot grid — gives depth without distraction */
+    background-image: radial-gradient(circle, #27272a 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Remove number input spin buttons globally */
+  input[type="number"] {
+    -webkit-appearance: textfield;
+    appearance: textfield;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@layer utilities {
+  .font-barlow {
+    font-family: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+  }
+
+  .font-jetbrains {
+    font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Menlo, monospace;
+  }
+
+  .tabular-data {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    letter-spacing: 0.02em;
+  }
+}
