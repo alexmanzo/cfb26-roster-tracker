@@ -10,11 +10,14 @@ const props = defineProps<{
 const emit = defineEmits<{
   remove: [playerId: string];
   update: [playerId: string, ovr: number];
+  'tab-next': [playerId: string];
+  'tab-prev': [playerId: string];
 }>();
 
 const isEditing = ref(false);
 const editValue = ref('');
 const pillSpanRef = ref<HTMLElement | null>(null);
+const suppressRefocus = ref(false);
 
 function ovrColorClass(ovr: number): string {
   if (ovr >= 90) return 'text-purple-300 bg-purple-500/20 border-purple-500/50 hover:bg-purple-500/30';
@@ -29,6 +32,7 @@ function startEdit() {
 }
 
 function confirmEdit() {
+  if (!isEditing.value) return; // guard against double-fire from blur after keydown
   const val = parseInt(editValue.value);
   if (!isNaN(val) && val >= 1 && val <= 99) {
     emit('update', props.player.id, val);
@@ -42,7 +46,13 @@ function cancelEdit() {
 
 function onEditKeydown(e: KeyboardEvent) {
   if (e.key === 'Enter') { e.preventDefault(); confirmEdit(); }
-  if (e.key === 'Escape') cancelEdit();
+  if (e.key === 'Escape') { e.preventDefault(); cancelEdit(); }
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    suppressRefocus.value = true;
+    confirmEdit();
+    emit(e.shiftKey ? 'tab-prev' : 'tab-next', props.player.id);
+  }
 }
 
 function onContextMenu(e: MouseEvent) {
@@ -54,9 +64,15 @@ function onContextMenu(e: MouseEvent) {
 // so the user can keep navigating with arrow keys or edit again.
 watch(isEditing, (val) => {
   if (!val) {
+    if (suppressRefocus.value) {
+      suppressRefocus.value = false;
+      return;
+    }
     nextTick(() => pillSpanRef.value?.focus());
   }
 });
+
+defineExpose({ startEdit });
 </script>
 
 <template>

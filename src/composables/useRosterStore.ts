@@ -120,6 +120,12 @@ function createStore() {
     }
   }
 
+  function resetCommits() {
+    for (const pos of state.value.positions) {
+      pos.commits = [];
+    }
+  }
+
   function resetToDefaults() {
     state.value = {
       version: 1,
@@ -142,6 +148,7 @@ function createStore() {
     removeCommit,
     removeLastCommit,
     resetSrTr,
+    resetCommits,
     resetToDefaults,
   };
 }

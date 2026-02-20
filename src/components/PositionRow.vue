@@ -25,6 +25,7 @@ const emit = defineEmits<{
 
 const showAddPlayer = ref(false);
 const newOvr = ref('');
+const pillRefs = ref<InstanceType<typeof PlayerPill>[]>([]);
 
 const sortedPlayers = computed(() =>
   [...props.pos.players].sort((a, b) => b.ovr - a.ovr),
@@ -41,6 +42,41 @@ function onAddPlayer() {
     newOvr.value = '';
     showAddPlayer.value = false;
   }
+}
+
+function handlePillTabNext(playerId: string) {
+  const idx = sortedPlayers.value.findIndex(p => p.id === playerId);
+  if (idx < sortedPlayers.value.length - 1) {
+    nextTick(() => pillRefs.value[idx + 1]?.startEdit());
+  } else {
+    // Last pill — open add-player input
+    showAddPlayer.value = true;
+  }
+}
+
+function handlePillTabPrev(playerId: string) {
+  const idx = sortedPlayers.value.findIndex(p => p.id === playerId);
+  if (idx > 0) {
+    nextTick(() => pillRefs.value[idx - 1]?.startEdit());
+  }
+  // idx === 0: let focus leave naturally
+}
+
+function handleAddPlayerShiftTab() {
+  showAddPlayer.value = false;
+  if (sortedPlayers.value.length > 0) {
+    nextTick(() => pillRefs.value[sortedPlayers.value.length - 1]?.startEdit());
+  }
+}
+
+function handleAddPlayerTab() {
+  // Save if valid, then reopen for the next player
+  const val = parseInt(newOvr.value);
+  if (!isNaN(val) && val >= 1 && val <= 99) {
+    emit('add-player', props.pos.id, val);
+  }
+  newOvr.value = '';
+  nextTick(() => { showAddPlayer.value = true; });
 }
 
 // When a pill is removed via keyboard, keep focus on the nearest remaining pill.
@@ -137,10 +173,13 @@ function needBg(need: number): string {
         <PlayerPill
           v-for="player in sortedPlayers"
           :key="player.id"
+          ref="pillRefs"
           :player="player"
           :posId="pos.id"
           @remove="handleRemovePlayer"
           @update="(playerId, ovr) => emit('update-player-ovr', pos.id, playerId, ovr)"
+          @tab-next="handlePillTabNext"
+          @tab-prev="handlePillTabPrev"
         />
 
         <!-- Add player inline form -->
@@ -152,8 +191,9 @@ function needBg(need: number): string {
           min="1"
           max="99"
           @keydown.enter.prevent="onAddPlayer"
-          @keydown.escape="showAddPlayer = false"
-          @blur="showAddPlayer = false"
+          @keydown.escape.prevent="showAddPlayer = false"
+          @keydown.tab.exact.prevent="handleAddPlayerTab"
+          @keydown.tab.shift.prevent="handleAddPlayerShiftTab"
           v-focus
         />
         <button

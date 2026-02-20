@@ -3,11 +3,17 @@ import AppHeader from './components/AppHeader.vue';
 import RosterTable from './components/RosterTable.vue';
 import { useRosterStore } from './composables/useRosterStore';
 
-const { resetSrTr, resetToDefaults } = useRosterStore();
+const { resetSrTr, resetCommits, resetToDefaults } = useRosterStore();
 
 function handleResetSrTr() {
   if (confirm('Reset all SR/TR values to 0?')) {
     resetSrTr();
+  }
+}
+
+function handleResetCommits() {
+  if (confirm('Clear all commits?')) {
+    resetCommits();
   }
 }
 
@@ -20,7 +26,7 @@ function handleReset() {
 
 <template>
   <div class="min-h-screen bg-zinc-950 text-zinc-100">
-    <AppHeader @reset="handleReset" @reset-srtr="handleResetSrTr" />
+    <AppHeader @reset="handleReset" @reset-srtr="handleResetSrTr" @reset-commits="handleResetCommits" />
     <main class="max-w-screen-2xl mx-auto">
       <RosterTable />
     </main>

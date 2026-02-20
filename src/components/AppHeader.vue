@@ -2,6 +2,7 @@
 defineEmits<{
   reset: [];
   'reset-srtr': [];
+  'reset-commits': [];
 }>();
 </script>
 
@@ -75,6 +76,13 @@ defineEmits<{
           title="Set all SR/TR values to 0"
         >
           Reset SR/TR
+        </button>
+        <button
+          class="px-3 py-1.5 font-barlow text-xs font-semibold tracking-wider uppercase rounded border border-zinc-700 text-zinc-500 hover:text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/5 transition-all duration-150"
+          @click="$emit('reset-commits')"
+          title="Clear all commits"
+        >
+          Reset Commits
         </button>
         <button
           class="px-3 py-1.5 font-barlow text-xs font-semibold tracking-wider uppercase rounded border border-zinc-700 text-zinc-500 hover:text-red-400 hover:border-red-500/40 hover:bg-red-500/5 transition-all duration-150"
