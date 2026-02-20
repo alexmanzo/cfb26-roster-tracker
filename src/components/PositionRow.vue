@@ -82,7 +82,7 @@ function needBg(need: number): string {
     @click="emit('row-focus', pos.id)"
     tabindex="0"
     @focus="emit('row-focus', pos.id)"
-    @keydown.enter.prevent="emit('row-focus', pos.id)"
+    @keydown.enter.prevent="(e: KeyboardEvent) => { if (e.target === e.currentTarget) emit('row-focus', pos.id) }"
   >
     <!-- Position label -->
     <td
@@ -158,10 +158,12 @@ function needBg(need: number): string {
         />
         <button
           v-else
-          class="inline-flex items-center justify-center w-5 h-5 rounded border border-dashed border-zinc-700 text-zinc-600 hover:border-zinc-500 hover:text-zinc-400 text-xs transition-colors opacity-0 group-hover/row:opacity-100"
+          class="inline-flex items-center justify-center w-5 h-5 rounded border border-dashed border-zinc-700 text-zinc-600 hover:border-zinc-500 hover:text-zinc-400 text-xs transition-colors opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:border-zinc-500 focus-visible:text-zinc-400"
+          :class="isFocused ? 'opacity-40' : ''"
           @click.stop="showAddPlayer = true"
-          title="Add player"
-          tabindex="-1"
+          @keydown.enter.prevent.stop="showAddPlayer = true"
+          title="Add player (Enter)"
+          tabindex="0"
         >
           +
         </button>
