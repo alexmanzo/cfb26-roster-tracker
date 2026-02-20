@@ -51,7 +51,11 @@ function onEditKeydown(e: KeyboardEvent) {
     e.preventDefault();
     suppressRefocus.value = true;
     confirmEdit();
-    emit(e.shiftKey ? 'tab-prev' : 'tab-next', props.player.id);
+    if (e.shiftKey) {
+      emit('tab-prev', props.player.id);
+    } else {
+      emit('tab-next', props.player.id);
+    }
   }
 }
 
