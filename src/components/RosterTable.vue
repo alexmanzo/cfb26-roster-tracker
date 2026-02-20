@@ -21,7 +21,12 @@ const {
   removeLastCommit,
 } = useRosterStore();
 
-const positionIds = computed(() => state.value.positions.map(p => p.id));
+// Use visual render order for keyboard nav, not raw positions order
+const positionIds = computed(() =>
+  renderItems.value
+    .filter((item): item is Extract<typeof item, { kind: 'position' }> => item.kind === 'position')
+    .map(item => item.pos.id)
+);
 
 type RenderItem =
   | { kind: 'section'; key: string; def: GroupDef }
