@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import type { Ref } from 'vue';
 import type { Commit } from '../types/roster';
 
@@ -26,6 +26,13 @@ export function useKeyboardNav(
 
   function blurActivePill() {
     getActivePill()?.blur();
+  }
+
+  function scrollRowIntoView(posId: string) {
+    nextTick(() => {
+      const row = document.querySelector(`[data-pos-id="${posId}"]`) as HTMLElement | null;
+      row?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
   }
 
   function handleKeydown(e: KeyboardEvent) {
@@ -109,6 +116,7 @@ export function useKeyboardNav(
         } else if (ids.length > 0) {
           focusedRowId.value = ids[ids.length - 1] ?? null;
         }
+        if (focusedRowId.value) scrollRowIntoView(focusedRowId.value);
         e.preventDefault();
         break;
       }
@@ -120,6 +128,7 @@ export function useKeyboardNav(
         } else if (ids.length > 0) {
           focusedRowId.value = ids[0] ?? null;
         }
+        if (focusedRowId.value) scrollRowIntoView(focusedRowId.value);
         e.preventDefault();
         break;
       }
