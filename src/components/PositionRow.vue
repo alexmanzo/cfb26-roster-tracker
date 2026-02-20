@@ -19,6 +19,7 @@ const emit = defineEmits<{
   'add-player': [posId: string, ovr: number];
   'remove-player': [posId: string, playerId: string];
   'update-player-ovr': [posId: string, playerId: string, ovr: number];
+  'remove-commit': [posId: string, commitId: string];
 }>();
 
 const showAddPlayer = ref(false);
@@ -159,7 +160,11 @@ function needBg(need: number): string {
 
     <!-- Commits -->
     <td class="px-3 py-2.5 min-w-[200px]">
-      <CommitBadgeList :commits="pos.commits" :athPending="isFocused && athPending" />
+      <CommitBadgeList
+        :commits="pos.commits"
+        :athPending="isFocused && athPending"
+        @remove-commit="(commitId) => emit('remove-commit', pos.id, commitId)"
+      />
     </td>
   </tr>
 </template>

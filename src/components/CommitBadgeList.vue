@@ -6,6 +6,10 @@ defineProps<{
   commits: Commit[];
   athPending: boolean;
 }>();
+
+const emit = defineEmits<{
+  'remove-commit': [commitId: string];
+}>();
 </script>
 
 <template>
@@ -14,7 +18,7 @@ defineProps<{
       v-for="commit in commits"
       :key="commit.id"
       :commit="commit"
-      @remove-commit="emit('remove-commit', $event)"
+      @remove-commit="(id) => emit('remove-commit', id)"
     />
 
     <!-- Ghost badge when ATH flag is pending: pulsing dashed indicator -->

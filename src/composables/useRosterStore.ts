@@ -74,6 +74,13 @@ function createStore() {
     }
   }
 
+  function removeCommit(posId: string, commitId: string) {
+    const pos = getPosition(posId);
+    if (pos) {
+      pos.commits = pos.commits.filter(c => c.id !== commitId);
+    }
+  }
+
   function removeLastCommit(posId: string) {
     const pos = getPosition(posId);
     if (pos && pos.commits.length > 0) {
@@ -97,6 +104,7 @@ function createStore() {
     removePlayer,
     updatePlayerOvr,
     addCommit,
+    removeCommit,
     removeLastCommit,
     resetToDefaults,
   };

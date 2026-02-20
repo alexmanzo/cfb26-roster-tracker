@@ -14,6 +14,7 @@ const {
   removePlayer,
   updatePlayerOvr,
   addCommit,
+  removeCommit,
   removeLastCommit,
 } = useRosterStore();
 
@@ -112,6 +113,7 @@ defineExpose({ state, derivedMap });
             @add-player="addPlayer"
             @remove-player="removePlayer"
             @update-player-ovr="updatePlayerOvr"
+            @remove-commit="removeCommit"
           />
 
         </template>
