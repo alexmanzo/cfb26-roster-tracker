@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import type { DerivedStats, PositionGroup } from '../types/roster';
 import CommitBadgeList from './CommitBadgeList.vue';
 import EditableCell from './EditableCell.vue';
@@ -24,6 +24,14 @@ const emit = defineEmits<{
 
 const showAddPlayer = ref(false);
 const newOvr = ref(80);
+
+const sortedPlayers = computed(() =>
+  [...props.pos.players].sort((a, b) => b.ovr - a.ovr),
+);
+
+const sortedCommits = computed(() =>
+  [...props.pos.commits].sort((a, b) => b.stars - a.stars),
+);
 
 function onAddPlayer() {
   if (newOvr.value >= 1 && newOvr.value <= 99) {
@@ -125,7 +133,7 @@ function needBg(need: number): string {
     <td class="px-3 py-2.5" @click.stop>
       <div class="flex flex-wrap gap-1.5 items-center min-h-[28px]">
         <PlayerPill
-          v-for="player in pos.players"
+          v-for="player in sortedPlayers"
           :key="player.id"
           :player="player"
           :posId="pos.id"
@@ -161,7 +169,7 @@ function needBg(need: number): string {
     <!-- Commits -->
     <td class="px-3 py-2.5 min-w-[200px]">
       <CommitBadgeList
-        :commits="pos.commits"
+        :commits="sortedCommits"
         :athPending="isFocused && athPending"
         @remove-commit="(commitId) => emit('remove-commit', pos.id, commitId)"
       />
