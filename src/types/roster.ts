@@ -1,8 +1,12 @@
 export interface Player {
   id: string;
-  ovr?: number;
-  stars?: 1 | 2 | 3 | 4 | 5;
-  isAth?: boolean;
+  ovr: number;
+}
+
+export interface Commit {
+  id: string;
+  stars: 1 | 2 | 3 | 4 | 5;
+  isAth: boolean;
 }
 
 export interface PositionGroup {
@@ -11,7 +15,7 @@ export interface PositionGroup {
   players: Player[];
   srTr: number;
   target: number;
-  commits: Player[];
+  commits: Commit[];
 }
 
 export interface DerivedStats {
