@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import AccountMenu from './AccountMenu.vue';
+import { useRosterStore, ROSTER_LIMIT } from '../composables/useRosterStore';
+
+const { rosterTotals } = useRosterStore();
+
 defineEmits<{
   reset: [];
   'reset-srtr': [];
@@ -23,6 +28,20 @@ defineEmits<{
             <span class="font-barlow text-[10px] font-semibold tracking-[0.18em] text-zinc-600 uppercase">Tracker</span>
           </div>
         </div>
+
+        <!-- Roster totals against the 85-man limit -->
+        <div class="flex items-center gap-4 pl-4 border-l border-zinc-800">
+          <div class="flex items-baseline gap-1.5" :title="`${rosterTotals.total} of ${ROSTER_LIMIT} roster spots filled now`">
+            <span class="font-jetbrains tabular-data text-base leading-none" :class="rosterTotals.total > ROSTER_LIMIT ? 'text-red-400' : 'text-zinc-100'">{{ rosterTotals.total }}</span>
+            <span class="font-jetbrains tabular-data text-[11px] text-zinc-600 leading-none">/{{ ROSTER_LIMIT }}</span>
+            <span class="font-barlow text-[10px] font-semibold tracking-[0.18em] text-zinc-500 uppercase leading-none">Roster</span>
+          </div>
+          <div class="flex items-baseline gap-1.5" :title="`${rosterTotals.projected} of ${ROSTER_LIMIT} after seniors/transfers leave and commits arrive`">
+            <span class="font-jetbrains tabular-data text-base leading-none" :class="rosterTotals.projected > ROSTER_LIMIT ? 'text-red-400' : rosterTotals.projected < rosterTotals.total ? 'text-orange-300/80' : 'text-zinc-100'">{{ rosterTotals.projected }}</span>
+            <span class="font-jetbrains tabular-data text-[11px] text-zinc-600 leading-none">/{{ ROSTER_LIMIT }}</span>
+            <span class="font-barlow text-[10px] font-semibold tracking-[0.18em] text-zinc-500 uppercase leading-none">Projected</span>
+          </div>
+        </div>
       </div>
 
       <!-- Keyboard shortcut legend -->
@@ -35,36 +54,6 @@ defineEmits<{
         <div class="flex items-center gap-1.5">
           <kbd class="inline-flex items-center px-1.5 py-0.5 rounded-[3px] bg-zinc-800 border border-zinc-700 font-jetbrains text-[10px] text-zinc-200 shadow-[0_1px_0_0_#52525b] leading-none font-medium">A</kbd>
           <span class="text-[11px] text-zinc-500 leading-none">ATH</span>
-        </div>
-        <span class="text-zinc-700 text-xs">·</span>
-        <div class="flex items-center gap-1.5">
-          <kbd class="inline-flex items-center px-1.5 py-0.5 rounded-[3px] bg-zinc-800 border border-zinc-700 font-jetbrains text-[10px] text-zinc-200 shadow-[0_1px_0_0_#52525b] leading-none font-medium">Del</kbd>
-          <span class="text-[11px] text-zinc-500 leading-none">undo</span>
-        </div>
-        <span class="text-zinc-700 text-xs">·</span>
-        <div class="flex items-center gap-1.5">
-          <kbd class="inline-flex items-center px-1.5 py-0.5 rounded-[3px] bg-zinc-800 border border-zinc-700 font-jetbrains text-[10px] text-zinc-200 shadow-[0_1px_0_0_#52525b] leading-none font-medium">↑↓</kbd>
-          <span class="text-[11px] text-zinc-500 leading-none">rows</span>
-        </div>
-        <span class="text-zinc-700 text-xs">·</span>
-        <div class="flex items-center gap-1.5">
-          <kbd class="inline-flex items-center px-1.5 py-0.5 rounded-[3px] bg-zinc-800 border border-zinc-700 font-jetbrains text-[10px] text-zinc-200 shadow-[0_1px_0_0_#52525b] leading-none font-medium">←→</kbd>
-          <span class="text-[11px] text-zinc-500 leading-none">players</span>
-        </div>
-        <span class="text-zinc-700 text-xs">·</span>
-        <div class="flex items-center gap-1.5">
-          <kbd class="inline-flex items-center px-1.5 py-0.5 rounded-[3px] bg-zinc-800 border border-zinc-700 font-jetbrains text-[10px] text-zinc-200 shadow-[0_1px_0_0_#52525b] leading-none font-medium">Enter</kbd>
-          <span class="text-[11px] text-zinc-500 leading-none">edit/save</span>
-        </div>
-        <span class="text-zinc-700 text-xs">·</span>
-        <div class="flex items-center gap-1.5">
-          <kbd class="inline-flex items-center px-1.5 py-0.5 rounded-[3px] bg-zinc-800 border border-zinc-700 font-jetbrains text-[10px] text-zinc-200 shadow-[0_1px_0_0_#52525b] leading-none font-medium">Esc</kbd>
-          <span class="text-[11px] text-zinc-500 leading-none">cancel</span>
-        </div>
-        <span class="text-zinc-700 text-xs">·</span>
-        <div class="flex items-center gap-1.5">
-          <kbd class="inline-flex items-center px-1.5 py-0.5 rounded-[3px] bg-zinc-800 border border-zinc-700 font-jetbrains text-[10px] text-zinc-200 shadow-[0_1px_0_0_#52525b] leading-none font-medium">Click</kbd>
-          <span class="text-[11px] text-zinc-500 leading-none">select row</span>
         </div>
       </div>
 
@@ -91,6 +80,7 @@ defineEmits<{
         >
           Reset
         </button>
+        <AccountMenu />
       </div>
     </div>
   </header>

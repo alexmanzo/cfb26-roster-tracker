@@ -2,6 +2,7 @@ import { computed } from 'vue';
 import type { Commit, DerivedStats, PositionGroup, RosterState, SuperGroupDerivedStats } from '../types/roster';
 import { DEFAULT_POSITIONS, DEFAULT_SUPER_GROUPS } from '../data/defaultPositions';
 import { useLocalStorage } from './useLocalStorage';
+import { useCloudSync } from './useCloudSync';
 
 function deepClone<T>(val: T): T {
   return JSON.parse(JSON.stringify(val));
@@ -10,6 +11,8 @@ function deepClone<T>(val: T): T {
 function makeId(): string {
   return Math.random().toString(36).slice(2, 10);
 }
+
+export const ROSTER_LIMIT = 85;
 
 // Singleton — created once at module level so all components share state
 let _store: ReturnType<typeof createStore> | null = null;
@@ -25,6 +28,8 @@ function createStore() {
   if (!state.value.superGroups) {
     state.value = { ...state.value, superGroups: deepClone(DEFAULT_SUPER_GROUPS) };
   }
+
+  const { status: syncStatus } = useCloudSync(state);
 
   const derivedMap = computed(() => {
     const map = new Map<string, DerivedStats>();
@@ -50,6 +55,16 @@ function createStore() {
       map.set(sg.id, { total, projected, need: sg.target - projected, srTrSum });
     }
     return map;
+  });
+
+  // Whole-roster totals for the header
+  const rosterTotals = computed(() => {
+    let total = 0, projected = 0;
+    for (const d of derivedMap.value.values()) {
+      total += d.total;
+      projected += d.projected;
+    }
+    return { total, projected };
   });
 
   function getPosition(id: string): PositionGroup | undefined {
@@ -136,7 +151,9 @@ function createStore() {
 
   return {
     state,
+    syncStatus,
     derivedMap,
+    rosterTotals,
     superGroupDerivedMap,
     updateSrTr,
     updateTarget,
