@@ -13,7 +13,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'QB',
     players: makePlayers([]),
     srTr: 0,
-    target: 4,
+    target: 5,
     commits: [],
   },
   {
@@ -29,7 +29,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'FB',
     players: makePlayers([]),
     srTr: 0,
-    target: 0,
+    target: 2,
     commits: [],
   },
   {
@@ -45,7 +45,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'TE',
     players: makePlayers([]),
     srTr: 0,
-    target: 3,
+    target: 5,
     commits: [],
   },
   {
@@ -53,7 +53,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'LT',
     players: makePlayers([]),
     srTr: 0,
-    target: 4,
+    target: 3,
     commits: [],
   },
   {
@@ -69,7 +69,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'C',
     players: makePlayers([]),
     srTr: 0,
-    target: 2,
+    target: 3,
     commits: [],
   },
   {
@@ -85,7 +85,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'RT',
     players: makePlayers([]),
     srTr: 0,
-    target: 4,
+    target: 3,
     commits: [],
   },
   {
@@ -93,7 +93,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'LEDG',
     players: makePlayers([]),
     srTr: 0,
-    target: 4,
+    target: 3,
     commits: [],
   },
   {
@@ -101,7 +101,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'REDG',
     players: makePlayers([]),
     srTr: 0,
-    target: 4,
+    target: 3,
     commits: [],
   },
   {
@@ -125,7 +125,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'MIKE',
     players: makePlayers([]),
     srTr: 0,
-    target: 4,
+    target: 3,
     commits: [],
   },
   {
@@ -133,7 +133,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'WILL',
     players: makePlayers([]),
     srTr: 0,
-    target: 4,
+    target: 3,
     commits: [],
   },
   {
@@ -141,7 +141,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'CB',
     players: makePlayers([]),
     srTr: 0,
-    target: 7,
+    target: 8,
     commits: [],
   },
   {
@@ -165,7 +165,7 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'K',
     players: makePlayers([]),
     srTr: 0,
-    target: 1,
+    target: 2,
     commits: [],
   },
   {
@@ -173,14 +173,14 @@ export const DEFAULT_POSITIONS: PositionGroup[] = [
     label: 'P',
     players: makePlayers([]),
     srTr: 0,
-    target: 1,
+    target: 2,
     commits: [],
   },
 ];
 
 export const DEFAULT_SUPER_GROUPS: PositionSuperGroup[] = [
-  { id: 'ot', label: 'OT', memberIds: ['lt', 'rt'], target: 8 },
+  { id: 'ot', label: 'OT', memberIds: ['lt', 'rt'], target: 6 },
   { id: 'og', label: 'OG', memberIds: ['lg', 'rg'], target: 6 },
-  { id: 'edge', label: 'EDGE', memberIds: ['ledg', 'redg'], target: 8 },
-  { id: 'olb', label: 'OLB', memberIds: ['sam', 'will'], target: 7 },
+  { id: 'edge', label: 'EDGE', memberIds: ['ledg', 'redg'], target: 6 },
+  { id: 'olb', label: 'OLB', memberIds: ['sam', 'will'], target: 6 },
 ];
